@@ -5,6 +5,7 @@ import { BsChatLeft } from 'react-icons/bs';
 import { RiNotification3Line } from 'react-icons/ri';
 import { MdKeyboardArrowDown } from 'react-icons/md';
 import { TooltipComponent } from '@syncfusion/ej2-react-popups';
+import { useMediaQuery } from 'react-responsive'; // Added import for media query
 
 import avatar from '../data/avatar.jpg';
 import { Cart, Chat, Notification, UserProfile } from '.';
@@ -29,30 +30,20 @@ const NavButton = ({ title, customFunc, icon, color, dotColor }) => (
 
 const Navbar = () => {
   const { currentColor, activeMenu, setActiveMenu, handleClick, isClicked, setScreenSize, screenSize } = useStateContext();
+  
+  // Use useMediaQuery hook for mobile responsiveness
+  const isMobile = useMediaQuery({ query: '(max-width: 900px)' });
 
+  // Adjust menu visibility based on screen size
   useEffect(() => {
-    const handleResize = () => setScreenSize(window.innerWidth);
+    setActiveMenu(!isMobile);
+  }, [isMobile]);
 
-    window.addEventListener('resize', handleResize);
-
-    handleResize();
-
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  useEffect(() => {
-    if (screenSize <= 900) {
-      setActiveMenu(false);
-    } else {
-      setActiveMenu(true);
-    }
-  }, [screenSize]);
-
+  // Function to toggle the menu on mobile
   const handleActiveMenu = () => setActiveMenu(!activeMenu);
 
   return (
     <div className="flex justify-between p-2 md:ml-6 md:mr-6 relative">
-
       <NavButton title="Menu" customFunc={handleActiveMenu} color={currentColor} icon={<AiOutlineMenu />} />
       <div className="flex">
         <NavButton title="Cart" customFunc={() => handleClick('cart')} color={currentColor} icon={<FiShoppingCart />} />
@@ -78,6 +69,7 @@ const Navbar = () => {
           </div>
         </TooltipComponent>
 
+        {/* Conditional rendering of modals */}
         {isClicked.cart && (<Cart />)}
         {isClicked.chat && (<Chat />)}
         {isClicked.notification && (<Notification />)}
